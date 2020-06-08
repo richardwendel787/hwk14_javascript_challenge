@@ -2,9 +2,9 @@
 
 
 //use this to iterate through the key, val pairs of a dict
-for (const [key, value] of data.entries()) {
-    console.log(key, value);
-  }
+//for (const [key, value] of data.entries()) {
+ //   console.log(key, value);
+ // }
 var tableData = data;
 
 // YOUR CODE HERE!
@@ -22,11 +22,15 @@ $searchBtn.addEventListener("click", handleSearchButtonClick);
 var tableData = data;
 
 // render data to tbody
-function renderTable() {
+function renderTable(find_date=null) {
+	console.log(find_date);
 	// clear the previous table
 	$tbody.innerHTML = "";
-
-
+	if ( (find_date !=null) && find_date[0]=="0")
+	{
+		find_date=find_date.substring(1,find_date.length);//drop the leading zero if they eeterd one
+	}
+	console.log(find_date);
 	for (var i = 0; i < tableData.length; i++) {
 
 		
@@ -39,32 +43,37 @@ function renderTable() {
 		// name the plural form or something similar
 		for (var j = 0; j < infos.length; j++) {
 			var info = infos[j];
-		
-			var $cell = $row.insertCell(j);
-		
-			$cell.innerText = currentSighting[info];
+			if (find_date !=null) //was a search date specified?
+			{
+
+			
+				if (currentSighting["datetime"]==find_date)
+				{
+					var $cell = $row.insertCell(j);
+					$cell.innerText = currentSighting[info];
+				}
+			}
+			else{ //if no search date, then bild like normal
+				var $cell = $row.insertCell(j);
+				$cell.innerText = currentSighting[info];
+			}
+
 		}
 	}
 }
 
 function handleSearchButtonClick() {
 
-	var filteredDate = $dateInput.value.trim();
+	var date_input = $dateInput.value.trim();
 
-	
+	if (date_input.match("[0-9]{1,2}/[0-9]{1,2}/[1,2][0-9]{3}")==null)  //validate the user input to match the pattern of a valid entry, ie 1/11/2011
+	{
+		console.log("did not match date"+date_input);
+		renderTable();
 
-	
-	if (filteredDate.length != 0) {
-		tableData = data.filter(function(currentSighting){
-			var sightingDate = sighting.date;
-			return sightingDate === filteredDate;
-		});
 	}
-
-	else {
-		tableData = data;
-	}
-    renderTable();
+	else{renderTable(date_input);}
+	
 }
 
 // render
